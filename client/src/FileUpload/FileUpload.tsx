@@ -19,10 +19,12 @@ const FileUpload: React.FC<Props> = ({ files, setFiles, removeFile }) => {
     if (!file) return;
     file.isUploading = true;
     setFiles([...files, file]);
+    console.log([...files]);
 
     // upload file
     const formData = new FormData();
     formData.append("newFile", file, file.name);
+    console.log("formData" + formData);
     axios
       .post("http://localhost:8080/upload", formData)
       .then((res) => {
