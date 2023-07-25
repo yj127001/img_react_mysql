@@ -11,3 +11,5 @@ conn.connect((error)=>{
     if(error) throw error;
     console.log("connected1!")
 })
+
+module.exports = conn

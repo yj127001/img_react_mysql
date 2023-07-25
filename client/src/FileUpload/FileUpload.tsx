@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import "./FileUpload.css";
@@ -37,6 +37,17 @@ const FileUpload: React.FC<Props> = ({ files, setFiles, removeFile }) => {
         removeFile(file.name);
       });
   };
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/getdata")
+      .then((res) => {
+        console.log("back result:" + res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
 
   return (
     <>
