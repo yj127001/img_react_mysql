@@ -30,9 +30,11 @@ if (process.env.NODE_ENV === 'development') {
 // Connect App routes
 app.use('/api-docs', openapi);
 app.use('/persons', person);
-app.use('*', (_, res) => {
-  res.redirect('/api-docs');
-});
+// app.use('*', (_, res) => {
+//   res.redirect('/api-docs');
+// });
+
+app.use(express.static('public'))
 
 // Start the server
 app.listen(port, () => {
