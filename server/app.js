@@ -3,8 +3,8 @@ import { config } from './db/config.js';
 import Database from './db/database.js';
 
 // Import App routes
-import person from './db/person.js';
-import openapi from './db/opanapi.js';
+import image from './model/image.js';
+// import openapi from './db/opanapi.js';
 
 const port = process.env.PORT || 8080;
 
@@ -16,7 +16,8 @@ if (process.env.NODE_ENV === 'development') {
   const database = new Database(config);
   database
     .executeQuery(
-      `CREATE TABLE Person (id int NOT NULL IDENTITY, firstName varchar(255), lastName varchar(255));`
+        `CREATE TABLE Image (id int NOT NULL IDENTITY, content varbinary(max));`
+    //   `CREATE TABLE Person (id int NOT NULL IDENTITY, firstName varchar(255), lastName varchar(255));`
     )
     .then(() => {
       console.log('Table created');
@@ -28,8 +29,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Connect App routes
-app.use('/api-docs', openapi);
-app.use('/persons', person);
+// app.use('/api-docs', openapi);
+// app.use('/persons', person);
+app.use('/upload', image);
 // app.use('*', (_, res) => {
 //   res.redirect('/api-docs');
 // });

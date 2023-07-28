@@ -1,6 +1,11 @@
+// https://www.npmjs.com/package/multer
+
+
 import express from 'express';
-import { config } from './config.js';
-import Database from './database.js';
+import { config } from '../db/config.js';
+import ImageDB from '../db/imagedb.js';
+import multer from 'multer';
+const upload = multer().single('newFile')
 
 const router = express.Router();
 router.use(express.json());
@@ -9,83 +14,85 @@ router.use(express.json());
 console.log(config);
 
 // Create database object
-const database = new Database(config);
+const database = new ImageDB(config);
 
-router.get('/', async (_, res) => {
-  try {
-    // Return a list of persons
-    const persons = await database.readAll();
-    console.log(`persons: ${JSON.stringify(persons)}`);
-    res.status(200).json(persons);
-  } catch (err) {
-    res.status(500).json({ error: err?.message });
-  }
-});
+// router.get('/', async (_, res) => {
+//   try {
+//     // Return a list of persons
+//     const persons = await database.readAll();
+//     console.log(`persons: ${JSON.stringify(persons)}`);
+//     res.status(200).json(persons);
+//   } catch (err) {
+//     res.status(500).json({ error: err?.message });
+//   }
+// });
 
 router.post('/', async (req, res) => {
   try {
-    // Create a person
-    const person = req.body;
-    console.log(`person: ${JSON.stringify(person)}`);
-    const rowsAffected = await database.create(person);
-    res.status(201).json({ rowsAffected });
+    upload(req, res, function (err) {
+      // Create a person
+      const image = req.file.buffer;
+      // console.log(`image: ${JSON.stringify(person)}`);
+      const rowsAffected = database.create(image).then(() => res.status(201).json({ rowsAffected }))
+    });
+    
   } catch (err) {
     res.status(500).json({ error: err?.message });
   }
 });
 
-router.get('/:id', async (req, res) => {
-  try {
-    // Get the person with the specified ID
-    const personId = req.params.id;
-    console.log(`personId: ${personId}`);
-    if (personId) {
-      const result = await database.read(personId);
-      console.log(`persons: ${JSON.stringify(result)}`);
-      res.status(200).json(result);
-    } else {
-      res.status(404);
-    }
-  } catch (err) {
-    res.status(500).json({ error: err?.message });
-  }
-});
+// router.get('/:id', async (req, res) => {
+//   try {
+//     // Get the person with the specified ID
+//     const personId = req.params.id;
+//     console.log(`personId: ${personId}`);
+//     if (personId) {
+//       const result = await database.read(personId);
+//       console.log(`persons: ${JSON.stringify(result)}`);
+//       res.status(200).json(result);
+//     } else {
+//       res.status(404);
+//     }
+//   } catch (err) {
+//     res.status(500).json({ error: err?.message });
+//   }
+// });
 
-router.put('/:id', async (req, res) => {
-  try {
-    // Update the person with the specified ID
-    const personId = req.params.id;
-    console.log(`personId: ${personId}`);
-    const person = req.body;
+// router.put('/:id', async (req, res) => {
+//   try {
+//     // Update the person with the specified ID
+//     const personId = req.params.id;
+//     console.log(`personId: ${personId}`);
+//     const person = req.body;
 
-    if (personId && person) {
-      delete person.id;
-      console.log(`person: ${JSON.stringify(person)}`);
-      const rowsAffected = await database.update(personId, person);
-      res.status(200).json({ rowsAffected });
-    } else {
-      res.status(404);
-    }
-  } catch (err) {
-    res.status(500).json({ error: err?.message });
-  }
-});
+//     if (personId && person) {
+//       delete person.id;
+//       console.log(`person: ${JSON.stringify(person)}`);
+//       const rowsAffected = await database.update(personId, person);
+//       res.status(200).json({ rowsAffected });
+//     } else {
+//       res.status(404);
+//     }
+//   } catch (err) {
+//     res.status(500).json({ error: err?.message });
+//   }
+// });
 
-router.delete('/:id', async (req, res) => {
-  try {
-    // Delete the person with the specified ID
-    const personId = req.params.id;
-    console.log(`personId: ${personId}`);
+// router.delete('/:id', async (req, res) => {
+//   try {
+//     // Delete the person with the specified ID
+//     const personId = req.params.id;
+//     console.log(`personId: ${personId}`);
 
-    if (!personId) {
-      res.status(404);
-    } else {
-      const rowsAffected = await database.delete(personId);
-      res.status(204).json({ rowsAffected });
-    }
-  } catch (err) {
-    res.status(500).json({ error: err?.message });
-  }
-});
+//     if (!personId) {
+//       res.status(404);
+//     } else {
+//       const rowsAffected = await database.delete(personId);
+//       res.status(204).json({ rowsAffected });
+//     }
+//   } catch (err) {
+//     res.status(500).json({ error: err?.message });
+//   }
+// });
 
 export default router;

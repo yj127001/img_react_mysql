@@ -1,6 +1,6 @@
 import sql from 'mssql';
 
-export default class Database {
+export default class ImageDB {
   config = {};
   poolconnection = null;
   connected = false;
@@ -46,11 +46,10 @@ export default class Database {
     await this.connect();
     const request = this.poolconnection.request();
 
-    request.input('firstName', sql.NVarChar(255), data.firstName);
-    request.input('lastName', sql.NVarChar(255), data.lastName);
+    request.input('content', sql.VarBinary, data);
 
     const result = await request.query(
-      `INSERT INTO Person (firstName, lastName) VALUES (@firstName, @lastName)`
+      `INSERT INTO Image (content) VALUES (@content)`
     );
 
     return result.rowsAffected[0];
@@ -59,7 +58,7 @@ export default class Database {
   async readAll() {
     await this.connect();
     const request = this.poolconnection.request();
-    const result = await request.query(`SELECT * FROM Person`);
+    const result = await request.query(`SELECT * FROM Image`);
 
     return result.recordsets[0];
   }
@@ -70,7 +69,7 @@ export default class Database {
     const request = this.poolconnection.request();
     const result = await request
       .input('id', sql.Int, +id)
-      .query(`SELECT * FROM Person WHERE id = @id`);
+      .query(`SELECT * FROM Image WHERE id = @id`);
 
     return result.recordset[0];
   }
@@ -81,11 +80,10 @@ export default class Database {
     const request = this.poolconnection.request();
 
     request.input('id', sql.Int, +id);
-    request.input('firstName', sql.NVarChar(255), data.firstName);
-    request.input('lastName', sql.NVarChar(255), data.lastName);
+    request.input('content', sql.VarBinary, data.content);
 
     const result = await request.query(
-      `UPDATE Person SET firstName=@firstName, lastName=@lastName WHERE id = @id`
+      `UPDATE Image SET content=@content WHERE id = @id`
     );
 
     return result.rowsAffected[0];
@@ -99,7 +97,7 @@ export default class Database {
     const request = this.poolconnection.request();
     const result = await request
       .input('id', sql.Int, idAsNumber)
-      .query(`DELETE FROM Person WHERE id = @id`);
+      .query(`DELETE FROM Image WHERE id = @id`);
 
     return result.rowsAffected[0];
   }
